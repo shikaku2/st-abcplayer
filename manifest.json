@@ -1,0 +1,13 @@
+{
+    "display_name": "ABC Music Player",
+    "version": "1.0.0",
+    "author": "Shikaku2",
+    "homePage": "https://github.com/Shikaku2/abc-music-player",
+    "js": "index.js",
+    "css": "style.css",
+    "loading_order": 10,
+    "auto_update": false,
+    "requires": [],
+    "dependencies": [],
+    "minimum_client_version": "1.12.0"
+}

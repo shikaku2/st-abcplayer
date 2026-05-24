@@ -1,0 +1,117 @@
+/* ABC Music Player — extension styles */
+
+.abc-player-wrapper {
+    background: var(--SmartThemeBlurTintColor, rgba(0,0,0,0.15));
+    border: 1px solid var(--SmartThemeBorderColor, rgba(255,255,255,0.1));
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin: 8px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.abc-player-title {
+    font-size: 0.85em;
+    font-weight: 600;
+    color: var(--SmartThemeEmColor, #aaa);
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.abc-player-title .fa-music {
+    opacity: 0.7;
+}
+
+.abc-notation-container {
+    overflow-x: auto;
+    background: rgba(255,255,255,0.04);
+    border-radius: 4px;
+    padding: 6px;
+}
+
+/* abcjs renders SVG — make it theme-friendly */
+.abc-notation-container svg {
+    max-width: 100%;
+    fill: var(--SmartThemeBodyColor, #ccc);
+    stroke: var(--SmartThemeBodyColor, #ccc);
+}
+
+.abc-notation-container.hidden {
+    display: none;
+}
+
+.abc-player-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+}
+
+.abc-player-controls button {
+    background: var(--SmartThemeBlurTintColor, rgba(255,255,255,0.08));
+    border: 1px solid var(--SmartThemeBorderColor, rgba(255,255,255,0.15));
+    border-radius: 5px;
+    color: var(--SmartThemeBodyColor, #ccc);
+    cursor: pointer;
+    font-size: 0.82em;
+    padding: 4px 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background 0.15s, opacity 0.15s;
+    white-space: nowrap;
+}
+
+.abc-player-controls button:hover {
+    background: var(--SmartThemeUserMesBlurTintColor, rgba(255,255,255,0.15));
+}
+
+.abc-player-controls button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.abc-btn-play { }
+.abc-btn-stop { }
+.abc-btn-toggle-notation { font-size: 0.78em; opacity: 0.75; }
+
+.abc-download-group {
+    display: flex;
+    gap: 4px;
+    margin-left: auto;
+}
+
+.abc-player-status {
+    font-size: 0.75em;
+    color: var(--SmartThemeEmColor, #888);
+    min-height: 1em;
+    font-style: italic;
+}
+
+.abc-player-status.error {
+    color: #e06c75;
+    font-style: normal;
+}
+
+/* Progress bar shown while rendering offline audio */
+.abc-render-progress {
+    height: 2px;
+    background: var(--SmartThemeBorderColor, rgba(255,255,255,0.1));
+    border-radius: 1px;
+    overflow: hidden;
+    display: none;
+}
+
+.abc-render-progress.active {
+    display: block;
+}
+
+.abc-render-progress-bar {
+    height: 100%;
+    background: var(--SmartThemeEmColor, #7c8ece);
+    width: 0%;
+    transition: width 0.2s;
+}
