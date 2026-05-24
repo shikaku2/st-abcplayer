@@ -73,7 +73,7 @@ then retry. If it still fails, use **MIDI** and convert externally:
 
 Add something like this to the character's system prompt or Author's Note:
 
-```
+````
 When composing or describing music, you may notate it in ABC format inside
 a ```abc code block. The notation will be rendered as interactive sheet music
 with playback. Include X:, T:, M:, L:, Q:, K:, and at least one voice.
@@ -106,7 +106,7 @@ V:3 name="Acoustic Bass"
 %%MIDI program 32
 |: C,4 G,4 | C,4 G,4 | F,4 C,4 | G,8 :|
 ```
-```
+````
 
 The model doesn't need to be told about the extension machinery — just that
 it can write ABC notation and it will play.
