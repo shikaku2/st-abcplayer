@@ -1,6 +1,6 @@
 {
     "display_name": "ABC Music Player",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "author": "Shikaku2",
     "homePage": "https://github.com/Shikaku2/abc-music-player",
     "js": "index.js",

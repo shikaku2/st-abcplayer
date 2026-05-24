@@ -13,7 +13,6 @@ import { saveSettingsDebounced } from '../../../../script.js';
 const EXT_NAME = 'abc-music-player';
 const ABCJS_CDN = 'https://cdn.jsdelivr.net/npm/abcjs@6.4.4/dist/abcjs-basic-min.js';
 const LAMEJS_CDN = 'https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js';
-const MP3_BITRATE_KBPS = 256; // CBR; lamejs's simple Mp3Encoder API doesn't expose VBR cleanly
 
 // Full GM soundfont — required for non-piano instruments (sax, trumpet, bass, etc.)
 // paulrosen's abcjs-specific URL is piano-only; FluidR3_GM has all 128 GM instruments.
@@ -29,6 +28,7 @@ const defaultSettings = {
     autoRender: true,
     showNotation: true,
     tempoMultiplier: 1.0,
+    mp3BitrateKbps: 256,
 };
 
 function loadSettings() {
@@ -249,7 +249,7 @@ async function buildPlayerWidget(abcString, messageId, blockIndex) {
                 <button class="abc-btn-dl-wav" title="Download WAV (renders offline)">
                     <i class="fa-solid fa-download"></i> WAV
                 </button>
-                <button class="abc-btn-dl-mp3" title="Download MP3 (${MP3_BITRATE_KBPS} kbps)">
+                <button class="abc-btn-dl-mp3" title="Download MP3">
                     <i class="fa-solid fa-download"></i> MP3
                 </button>
             </div>
@@ -455,7 +455,7 @@ async function buildPlayerWidget(abcString, messageId, blockIndex) {
         ext: 'mp3',
         encode: async (buf) => {
             await loadLamejs();
-            return audioBufferToMp3Blob(buf, MP3_BITRATE_KBPS);
+            return audioBufferToMp3Blob(buf, extension_settings[EXT_NAME].mp3BitrateKbps ?? 256);
         },
     }));
 
@@ -551,6 +551,16 @@ async function addSettingsUI() {
             const val = parseFloat($(this).val());
             if (!isNaN(val) && val > 0) {
                 extension_settings[EXT_NAME].tempoMultiplier = val;
+                saveSettingsDebounced();
+            }
+        });
+
+    $('#abc_player_mp3_bitrate')
+        .val(settings.mp3BitrateKbps)
+        .on('change', function () {
+            const val = parseInt($(this).val(), 10);
+            if (!isNaN(val)) {
+                extension_settings[EXT_NAME].mp3BitrateKbps = val;
                 saveSettingsDebounced();
             }
         });

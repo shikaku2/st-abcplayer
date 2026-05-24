@@ -21,6 +21,17 @@
                 <label for="abc_player_tempo">Tempo multiplier</label>
                 <input id="abc_player_tempo" type="number" class="text_pole" min="0.25" max="4.0" step="0.25" style="width:80px;" />
             </div>
+            <div class="flex-container">
+                <label for="abc_player_mp3_bitrate">MP3 quality (kbps)</label>
+                <select id="abc_player_mp3_bitrate" class="text_pole" style="width:80px;">
+                    <option value="64">64</option>
+                    <option value="96">96</option>
+                    <option value="128">128</option>
+                    <option value="192">192</option>
+                    <option value="256">256</option>
+                    <option value="320">320</option>
+                </select>
+            </div>
             <small style="color: var(--SmartThemeEmColor); display:block; margin-top:4px;">
                 Renders <code>```abc</code> code blocks as interactive sheet music with playback and download.
             </small>
