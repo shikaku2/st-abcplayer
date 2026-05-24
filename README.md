@@ -1,9 +1,14 @@
 # ABC Music Player — SillyTavern Extension
 
 Detects ` ```abc ` fenced code blocks in character messages, renders them as
-interactive sheet music, and provides playback + download (MIDI / WAV).
+interactive sheet music, and provides playback + download (MIDI / WAV / MP3).
 
 ---
+
+## Quick Install
+
+1. In SillyTavern, open **Extensions -> Install extension**
+2. Paste this URL: https://github.com/shikaku2/st-abcplayer
 
 ## Installation
 
@@ -40,7 +45,7 @@ After that it's cached by the browser. Requires network on first load.
 4. abcjs renders the ABC as SVG sheet music into the widget
 5. Play/Stop use abcjs's Web Audio synth (loads FluidR3_GM soundfont per-note from paulrosen's GitHub Pages CDN)
 6. MIDI export: `ABCJS.synth.getMidiFile()` → base64 data URI → `.mid` download
-7. WAV export: `OfflineAudioContext` render → 16-bit stereo PCM → `.wav` download
+7. WAV/MP3 export: abcjs renders each note via its own internal `OfflineAudioContext` inside `prime()`, mixing into a single `AudioBuffer` retrievable via `getAudioBuffer()`. WAV encodes that as 16-bit PCM; MP3 encodes it via lamejs (256 kbps CBR), loaded from jsDelivr on first use.
 
 The extension also hooks `MESSAGE_EDITED` and `CHAT_CHANGED` to handle reloads
 and edited messages. Already-processed blocks are marked with
@@ -48,33 +53,31 @@ and edited messages. Already-processed blocks are marked with
 
 ---
 
-## WAV export notes
+## Export notes
 
-WAV uses `OfflineAudioContext` — renders faster than real-time (no waiting for
-playback to finish). The duration is estimated from barline count × ms/measure,
-with a 4-second tail appended to avoid cutting off decay.
+WAV and MP3 both render faster than real-time — no need to wait for playback.
+abcjs handles the offline audio rendering internally inside `prime()`; the
+extension just grabs the resulting buffer and encodes it.
 
-**Potential gotcha:** If the WAV comes out silent, it likely means abcjs's
-synth couldn't load soundfont samples into the OfflineAudioContext before
-`startRendering()` was called. In that case:
+MP3 is encoded at **256 kbps CBR** via lamejs (~100KB, fetched from jsDelivr
+on first MP3 export, then browser-cached). Roughly 5× smaller than WAV with
+transparent quality.
 
-1. Click **Play** once to warm up and fully load the soundfont  
-2. Then click **WAV** — the offline render should succeed
-
-If WAV export remains unreliable, use **MIDI** instead and convert with
-FluidSynth: `fluidsynth -F out.wav /usr/share/soundfonts/GeneralUser-GS.sf2 out.mid`
+If export fails, try clicking **Play** first to warm up the soundfont cache,
+then retry. If it still fails, use **MIDI** and convert externally:
+`fluidsynth -F out.wav /usr/share/soundfonts/GeneralUser-GS.sf2 out.mid`
 
 ---
 
-## Prompting Alastor to generate ABC
+## Prompting an AI to generate ABC
 
-Add something like this to his system prompt or Author's Note:
+Add something like this to the character's system prompt or Author's Note:
 
 ```
-When composing or describing music, Alastor may notate it in ABC format inside
+When composing or describing music, you may notate it in ABC format inside
 a ```abc code block. The notation will be rendered as interactive sheet music
-with playback. He should include X:, T:, M:, L:, Q:, K:, and at least one
-voice. For multi-instrument pieces, assign each voice a %%MIDI program number
+with playback. Include X:, T:, M:, L:, Q:, K:, and at least one voice.
+For multi-instrument pieces, assign each voice a %%MIDI program number
 (General MIDI, 0-indexed) immediately after the V: declaration.
 
 Common instruments:
@@ -106,8 +109,7 @@ V:3 name="Acoustic Bass"
 ```
 
 The model doesn't need to be told about the extension machinery — just that
-it can write ABC notation and it will play. Alastor knowing it actually works
-is half the fun.
+it can write ABC notation and it will play.
 
 ---
 
@@ -170,14 +172,14 @@ C,4 G,4   | C,8 |
 
 ## Known limitations
 
-- **No vocals** — ABC and abcjs are instrumental only; this is fine
+- **No vocals** — ABC and abcjs are instrumental only
 - **Soundfont size** — FluidR3_GM fetches per-note MP3s (~80KB each) from
   paulrosen's GitHub Pages CDN, lazy-loaded on first Play click. A 3-instrument
   tune might pull 2–3MB on first load; all cached after that. If the CDN is
   slow or you want offline support, mirror the note files locally and update
   `SOUNDFONT_URL` in `index.js`.
-- **AAC not implemented** — WAV is lossless and universally convertible.
-  If you need AAC: `ffmpeg -i out.wav -c:a aac -b:a 192k out.aac`
+- **MP3 is CBR only** — lamejs's simple API doesn't expose clean VBR.
+  256 kbps CBR is transparent quality for most listeners.
 - **Long compositions** — WAV export estimates duration from barline count.
   Very long pieces (>5 min) may get cut off; increase the tail in
   `estimateDurationSeconds()` if needed.
@@ -191,5 +193,6 @@ C,4 G,4   | C,8 |
 ## Dependencies
 
 - [abcjs](https://paulrosen.github.io/abcjs/) v6.4.4 (MIT) — loaded from jsDelivr
+- [lamejs](https://github.com/nickcoutsos/lamejs) v1.2.1 (LGPL) — loaded from jsDelivr on first MP3 export
 - SillyTavern ≥ 1.12.0
 - DOMPurify (bundled with ST, used for title sanitization)
